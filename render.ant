@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+
+  <include file="config.ant"/>
+  
+  <!--
+  Render core template from default template
+  ************************************************************************** -->
+
+  <target name="omdesign.template" description="Generate new empty core template">
+    
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="wp-content/themes/${om.template}"/>
+    </delete>
+    
+    <mkdir dir="wp-content/themes/${om.template}" />
+
+    <copy todir="wp-content/themes/${om.template}">
+      <fileset dir="wp-content/themes/${wp.template}">
+        <exclude name="**/*.php" />
+        <exclude name="**/images/**" />
+      </fileset>
+    </copy>
+    
+    <!-- copy all php and clean them -->
+    <copy todir="wp-content/themes/${om.template}" encoding="utf-8">
+      <fileset dir="wp-content/themes/${wp.template}">
+        <include name="**/*.php"/>
+      </fileset>
+      <filterchain>
+        <!-- remove PHP comments -->
+        <replaceregex pattern="/\*.*?\*/" flags="gims" byline="false" />
+        <!-- remove HTML comments -->
+        <replaceregex pattern="&lt;!--[^>]*-->" flags="gims" byline="false" />
+        <!-- replace  twentyten to om -->
+        <replaceregex pattern="${wp.template}" replace="${om.template}" flags="gi" />
+        <!-- remove empty spaces before PHP start -->
+        <replaceregex pattern="&lt;\?php\s+" replace="&lt;\?php " flags="gim" byline="false" />
+        <replaceregex pattern="&lt;\?php\s+\?>" flags="gim" byline="false" />
+      </filterchain>
+    </copy>
+
+    <delete file="wp-content/themes/${om.template}/onecolumn-page.php" />
+    <delete file="wp-content/themes/${om.template}/sidebar-footer.php" />
+    <delete file="wp-content/themes/${om.template}/comments.php" />
+    <delete file="wp-content/themes/${om.template}/attachment.php" />
+    <delete file="wp-content/themes/${om.template}/tag.php" />
+    <delete file="wp-content/themes/${om.template}/author.php" />
+
+    <mkdir dir="wp-content/themes/${om.template}/js" />
+    <mkdir dir="wp-content/themes/${om.template}/images" />
+    <mkdir dir="wp-content/libs" />
+
+    <!-- fileset for replacement -->
+    <fileset dir="wp-content/themes/${om.template}" includes="**/*.php" id="php.fileset" />
+    <fileset dir="wp-content/themes/${om.template}" includes="**/function.php" id="php.function"/>
+
+    <!-- download JS -->
+    <get dest="wp-content/themes/${om.template}/js">
+      <url url="http://www.appelsiini.net/download/jquery.lazyload.mini.js" />
+      <url url="http://html5shim.googlecode.com/svn/trunk/html5.js" />
+    </get>
+
+    <get dest="wp-content/themes/${om.template}/screenshot.png" src="${github}Wordpress/wp-content/themes/omdesign/screenshot.png" />
+    <get dest="wp-content/themes/${om.template}/style.css" src="${github}Wordpress/wp-content/themes/omdesign/style.css" />
+    <get dest="wp-content/themes/${om.template}/js/main.js" src="${github}Wordpress/wp-content/themes/omdesign/js/main.js" />
+    
+  </target>
+  
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+
+  <include file="config.ant"/>
+  
+  <!--
+  Backup database
+  ************************************************************************** -->
+
+  <target name="backup">
+
+    <mkdir dir="backup" />
+
+    <delete failonerror="false">
+      <fileset file="backup/*.sql" />
+    </delete>
+
+    <!-- make database dump -->
+    <exec dir="" executable="${mysql}mysqldump"
+    output="backup/${database}_local.sql">
+      <arg line="--host=localhost" />
+      <arg line="-u root" />
+      <arg line="--password=" />
+      <arg line="--add-drop-table" />
+      <arg line="--default-character-set=utf8" />
+      <arg line="--complete-insert" />
+      <arg line="${database}" />
+    </exec>
+
+    <!-- process server SQL -->
+
+    <copy file="backup/${database}_local.sql" tofile="backup/${database}_server.sql" encoding="utf-8">
+      <filterchain>
+        <replacestring from="${url.local}" to="${url.production}"/>
+      </filterchain>
+    </copy>
+
+  </target>
+  
+</project>
