@@ -128,6 +128,43 @@ class om
     }
     return $since;
   }
+  
+ /**
+   * Get page content by slug
+   */
+  public static function get_page($slug, $args = array ())
+  {
+    $defaults = array (
+        'before' => '',
+        'after' => '',
+        'before_content' => '',
+        'after_content' => '',
+        'show_title' => 0,
+        'before_title' => '',
+        'after_title' => '',
+        'echo' => 1
+    );
 
+    $r = wp_parse_args($args, $defaults);
+    extract($r, EXTR_SKIP);
+
+    $page = new WP_Query('pagename=' . $slug);
+
+    if ($page->have_posts())
+    {
+      $page->the_post();
+      $title = ( $show_title) ? get_the_title() : '';
+
+      $content = get_the_content();
+      $content = apply_filters('the_content', $content); // filtr na obsah
+      $content = str_replace(']]>', ']]&gt;', $content);
+
+      return $before . $before_title . $title . $after_title . $before_content . $content . $after_content . $after;
+    }
+    else
+    {
+      return '';
+    }
+  }
 
 }
