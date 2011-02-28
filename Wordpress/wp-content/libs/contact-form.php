@@ -195,7 +195,10 @@ function get_contact_form()
   </script><?php
 }
 
-
+/**
+ * Generate Contact form by short code
+ * @return string
+ */
 function contact_short_code()
 {
   ob_start();
