@@ -30,7 +30,7 @@ class om
 
     if ($total_pages > 1)
     {
-      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '">' . __('Next &raquo;') . '</a>' : '';
+      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '">' . __('Next &raquo;') . '</a>' : ''; // add next ???
       return '<div class="paginator">' . paginate_links($pagination) . $after . '</div>';
     }
     else
@@ -130,8 +130,11 @@ class om
   }
   
  /**
-   * Get page content by slug
-   */
+  * Get page content by slug
+  * @param string $slug
+  * @param string $args
+  * @return type 
+  */
   public static function get_page($slug, $args = array ())
   {
     $defaults = array (
