@@ -30,7 +30,7 @@ class om
 
     if ($total_pages > 1)
     {
-      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '">' . __('Next &raquo;') . '</a>' : ''; // add next ???
+      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '" class="next page-numbers">' . __('Next &raquo;') . '</a>' : ''; // add next ???
       return '<div class="paginator">' . paginate_links($pagination) . $after . '</div>';
     }
     else
