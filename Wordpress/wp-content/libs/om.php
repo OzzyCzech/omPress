@@ -30,7 +30,7 @@ class om
 
     if ($total_pages > 1)
     {
-      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '" class="next page-numbers">' . __('Next &raquo;') . '</a>' : ''; // add next ???
+      $after = (absint(get_query_var('paged')) == 0) ? '<a href="' . get_pagenum_link('2') . '" class="next page-numbers">' . __('Next &raquo;') . '</a>' : '';
       return '<div class="paginator">' . paginate_links($pagination) . $after . '</div>';
     }
     else
@@ -79,7 +79,6 @@ class om
 
   /**
    * Render human time diff
-   *  - almost same function as human_time_diff();
    * @param integer $from
    * @param integer $to
    * @return string
@@ -173,15 +172,36 @@ class om
   /**
    * Load jQuery from Google CDN
    */
-  public static function jQueryFromGoogleCDN()
+  public static function jQuery_from_Google()
   {
     if (!is_admin())
     {
       wp_deregister_script('jquery');
-      wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false, '');
+      wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false, null);
       wp_enqueue_script('jquery');
     }
   }
 
+
+    /**
+   * Enqueue theme javascript
+   */
+  public static function register_theme_script($name, $filename = null, $dependencies = array ('jquery'), $version = null)
+  {
+    if ($filename == null)
+    {
+      $filename = '/js/' . $name . '.js';
+    }
+
+    if (file_exists(get_stylesheet_directory() . $filename))
+    {
+      wp_register_script('main', get_stylesheet_directory_uri() . '/js/' . $filename, $dependencies, $version);
+      wp_enqueue_script('main');
+    }
+    else
+    {
+      throw new Exception($filename . ' not exists');
+    }
+  }
 
 }
