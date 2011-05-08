@@ -1,44 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir=".">
 
-  <include file="config.ant"/>
+  <property file="omPress/default.properties"/>
+  <property file="omPress/local.properties"/>
 
+  <target name="build">
+    <exec executable="php">
+      <arg value="omPress/index.php" />
+      <arg value="build" />
+    </exec>
+  </target>
+ 
   <!--
   Compress Wordpress to one single zip file
   ************************************************************************** -->
 
-  <target name="wordpress" description="Generate single wordpres install file">
-
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="build"/>
-    </delete>
-
-    <mkdir dir="build" />
-
-    <copydir dest="build/wp-content" src="wp-content" />
-
-    <delete includeEmptyDirs="true">
-      <fileset dir="build/wp-content/themes/${om.template}/js"/>
-      <fileset file="build/wp-content/themes/${om.template}/style.css"/>
-    </delete>
-
-    <antcall target="minify.css" />
-    <antcall target="minify.js" />
+  <target name="zip.source" description="Generate single wordpres install file">
 
     <zip destfile="install.zip">
       <zipfileset dir="wp-admin" prefix="wp-admin" />
       <zipfileset dir="wp-includes" prefix="wp-includes" />
-      <zipfileset dir="build/wp-content" prefix="wp-content" />
+      <zipfileset dir="wp-content" prefix="wp-content" excludes="themes" />
 
       <zipfileset dir="." includes="*.php" />
       <zipfileset dir="." includes="readme.html" />
       <zipfileset dir="." includes="license.txt" />
     </zip>
-
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="build" />
-    </delete>
-
+    
   </target>
 
   <!--
@@ -81,6 +69,42 @@
       <mapper type="glob" from="*.css" to="*.css"/>
       <targetfile/>
     </apply>
+  </target>
+  
+  
+   <!--
+  Backup database
+  ************************************************************************** -->
+
+  <target name="database.backup">
+
+    <mkdir dir="omPress/database" />
+
+    <delete failonerror="false">
+      <fileset file="omPress/database/${database}_local.sql" />
+      <fileset file="omPress/database/${database}_server.sql" />
+    </delete>
+
+    <!-- make database dump -->
+    <exec dir="" executable="${mysql.dir}mysqldump"
+    output="omPress/database/${database}_local.sql">
+      <arg line="--host=localhost" />
+      <arg line="-u root" />
+      <arg line="--password=" />
+      <arg line="--add-drop-table" />
+      <arg line="--default-character-set=utf8" />
+      <arg line="--complete-insert" />
+      <arg line="${database}" />
+    </exec>
+
+    <!-- process server SQL -->
+
+    <copy file="omPress/database/${database}_local.sql" tofile="omPress/database/${database}_server.sql" encoding="utf-8">
+      <filterchain>
+        <replacestring from="${url.local}" to="${url.production}"/>
+      </filterchain>
+    </copy>
+
   </target>
   
 </project>
