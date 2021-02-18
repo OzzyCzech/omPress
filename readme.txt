@@ -1,3 +1,3 @@
-Wordpress helpers from www.omdesign.cz
+Wordpress helpers from ozana.cz
 
 - wordpress.sql - collection of usefull Wordpress SQL
